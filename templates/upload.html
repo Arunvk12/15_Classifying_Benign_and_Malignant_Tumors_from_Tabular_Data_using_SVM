@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data - Tumor Classification</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>Tumor Classification System</h2>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="/">Home</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/predict">Predict</a></li>
+            <li><a href="/models">Models</a></li>
+            <li><a href="/upload">Upload Data</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Upload Dataset</h1>
+        <p>Upload a CSV file containing tumor data to update the training dataset</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="upload-container">
+            <div class="upload-section">
+                <h3>Upload CSV File</h3>
+                <p class="upload-description">
+                    Please upload a CSV file with the following columns:
+                    <code>patient_id, age, tumor_size, texture, smoothness, compactness, diagnosis</code>
+                </p>
+
+                <form action="/upload" method="POST" enctype="multipart/form-data">
+                    <div class="file-input-container">
+                        <input type="file" id="file" name="file" accept=".csv" required>
+                        <label for="file" class="file-input-label">
+                            <span class="file-input-text">Choose CSV file...</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Upload and Process</button>
+                </form>
+            </div>
+
+            <div class="data-format-section">
+                <h3>Expected CSV Format</h3>
+                <div class="format-example">
+                    <h4>Sample Data:</h4>
+                    <div class="code-block">
+                        patient_id,age,tumor_size,texture,smoothness,compactness,diagnosis<br>
+                        1,45,2.5,65.2,0.85,0.72,benign<br>
+                        2,52,3.1,78.5,0.62,0.89,malignant<br>
+                        3,38,1.8,45.1,0.91,0.65,benign<br>
+                        ...
+                    </div>
+                </div>
+
+                <div class="format-requirements">
+                    <h4>Requirements:</h4>
+                    <ul>
+                        <li><strong>patient_id:</strong> Unique identifier for each patient</li>
+                        <li><strong>age:</strong> Patient age in years (20-80)</li>
+                        <li><strong>tumor_size:</strong> Tumor size in cm (0.5-5.0)</li>
+                        <li><strong>texture:</strong> Texture score (10-100)</li>
+                        <li><strong>smoothness:</strong> Smoothness score (0.1-1.0)</li>
+                        <li><strong>compactness:</strong> Compactness score (0.1-1.0)</li>
+                        <li><strong>diagnosis:</strong> Either "benign" or "malignant"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="current-data-section">
+                <h3>Current Dataset Info</h3>
+                <div class="data-info">
+                    <p><strong>Note:</strong> Uploading a new CSV file will replace the existing dataset.
+                    Make sure your new data follows the correct format to avoid errors.</p>
+                    <p>After uploading, you'll need to retrain the models for optimal performance with the new data.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="upload-actions">
+            <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="/models" class="btn btn-tertiary">View Models</a>
+        </div>
+    </div>
+
+    <footer>
+        <small>&copy; 2023 Tumor Classification App</small>
+    </footer>
+</body>
+</html>

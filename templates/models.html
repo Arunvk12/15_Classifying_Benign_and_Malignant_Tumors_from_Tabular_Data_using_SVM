@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Performance - Tumor Classification</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>Tumor Classification System</h2>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="/">Home</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/predict">Predict</a></li>
+            <li><a href="/models">Models</a></li>
+            <li><a href="/upload">Upload Data</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Model Performance</h1>
+        <p>Comparison of SVM and Random Forest model accuracy and metrics</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="model-comparison">
+            <div class="accuracy-comparison">
+                <h3>Model Accuracy</h3>
+                <div id="accuracy-chart" style="width: 100%; height: 300px;"></div>
+            </div>
+
+            <div class="model-metrics">
+                <div class="model-metric svm-metric">
+                    <h4>Support Vector Machine (SVM)</h4>
+                    <div class="metric-grid">
+                        <div class="metric-item">
+                            <span class="metric-label">Accuracy:</span>
+                            <span class="metric-value">{{ "%.2f"|format(svm_accuracy * 100) }}%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Precision (Benign):</span>
+                            <span class="metric-value">{{ "%.2f"|format(svm_report['0']['precision'] * 100) }}%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Recall (Benign):</span>
+                            <span class="metric-value">{{ "%.2f"|format(svm_report['0']['recall'] * 100) }}%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">F1-Score (Benign):</span>
+                            <span class="metric-value">{{ "%.2f"|format(svm_report['0']['f1-score'] * 100) }}%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-metric rf-metric">
+                    <h4>Random Forest</h4>
+                    <div class="metric-grid">
+                        <div class="metric-item">
+                            <span class="metric-label">Accuracy:</span>
+                            <span class="metric-value">{{ "%.2f"|format(rf_accuracy * 100) }}%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Precision (Benign):</span>
+                            <span class="metric-value">{{ "%.2f"|format(rf_report['0']['precision'] * 100) }}%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Recall (Benign):</span>
+                            <span class="metric-value">{{ "%.2f"|format(rf_report['0']['recall'] * 100) }}%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">F1-Score (Benign):</span>
+                            <span class="metric-value">{{ "%.2f"|format(rf_report['0']['f1-score'] * 100) }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="model-actions">
+            <h3>Actions</h3>
+            <div class="action-buttons">
+                <form action="/train" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-primary">Retrain Models</button>
+                </form>
+                <a href="/predict" class="btn btn-secondary">Make Prediction</a>
+                <a href="/dashboard" class="btn btn-tertiary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create accuracy comparison chart
+        const svmAccuracy = parseFloat('{{ svm_accuracy }}');
+        const rfAccuracy = parseFloat('{{ rf_accuracy }}');
+
+        const data = [{
+            x: ['SVM', 'Random Forest'],
+            y: [svmAccuracy, rfAccuracy],
+            type: 'bar',
+            marker: {
+                color: ['#007bff', '#28a745']
+            }
+        }];
+
+        const layout = {
+            title: 'Model Accuracy Comparison',
+            yaxis: {
+                title: 'Accuracy',
+                range: [0, 1]
+            },
+            font: {family: 'Arial, sans-serif', size: 14}
+        };
+
+        Plotly.newPlot('accuracy-chart', data, layout);
+    </script>
+
+    <footer>
+        <small>&copy; 2023 Tumor Classification App</small>
+    </footer>
+</body>
+</html>

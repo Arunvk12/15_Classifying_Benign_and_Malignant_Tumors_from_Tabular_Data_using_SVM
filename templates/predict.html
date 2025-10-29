@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Prediction - Tumor Classification</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>Tumor Classification System</h2>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="/">Home</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/predict">Predict</a></li>
+            <li><a href="/models">Models</a></li>
+            <li><a href="/upload">Upload Data</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Make Tumor Prediction</h1>
+        <p>Enter patient data to get classification results from both models</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="prediction-container">
+            <div class="prediction-form">
+                <h3>Patient Data Input</h3>
+                <form action="/predict" method="POST">
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" min="1" max="120" step="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tumor_size">Tumor Size (cm):</label>
+                        <input type="number" id="tumor_size" name="tumor_size" min="0.1" max="10" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="texture">Texture Score:</label>
+                        <input type="number" id="texture" name="texture" min="1" max="100" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smoothness">Smoothness Score:</label>
+                        <input type="number" id="smoothness" name="smoothness" min="0.1" max="1.0" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="compactness">Compactness Score:</label>
+                        <input type="number" id="compactness" name="compactness" min="0.1" max="1.0" step="0.01" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Classify Tumor</button>
+                </form>
+            </div>
+
+            {% if prediction %}
+            <div class="prediction-results">
+                <h3>Classification Results</h3>
+
+                <div class="model-results">
+                    <div class="model-card svm-card">
+                        <h4>Support Vector Machine (SVM)</h4>
+                        <div class="prediction-result {% if prediction.svm_class == 'malignant' %}malignant{% else %}benign{% endif %}">
+                            <h5>{{ prediction.svm_class | title }}</h5>
+                            <p class="confidence">Confidence: {{ "%.2f"|format(prediction.svm_probability * 100) }}%</p>
+                        </div>
+                    </div>
+
+                    <div class="model-card rf-card">
+                        <h4>Random Forest</h4>
+                        <div class="prediction-result {% if prediction.rf_class == 'malignant' %}malignant{% else %}benign{% endif %}">
+                            <h5>{{ prediction.rf_class | title }}</h5>
+                            <p class="confidence">Confidence: {{ "%.2f"|format(prediction.rf_probability * 100) }}%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-summary">
+                    <h4>Input Values</h4>
+                    <div class="input-grid">
+                        <div class="input-item">
+                            <strong>Age:</strong> {{ features[0] }}
+                        </div>
+                        <div class="input-item">
+                            <strong>Tumor Size:</strong> {{ features[1] }} cm
+                        </div>
+                        <div class="input-item">
+                            <strong>Texture:</strong> {{ features[2] }}
+                        </div>
+                        <div class="input-item">
+                            <strong>Smoothness:</strong> {{ features[3] }}
+                        </div>
+                        <div class="input-item">
+                            <strong>Compactness:</strong> {{ features[4] }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="/predict" class="btn btn-secondary">Make Another Prediction</a>
+                    <a href="/dashboard" class="btn btn-tertiary">Back to Dashboard</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <small>&copy; 2023 Tumor Classification App</small>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Tumor Classification</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>Tumor Classification System</h2>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="/">Home</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/predict">Predict</a></li>
+            <li><a href="/models">Models</a></li>
+            <li><a href="/upload">Upload Data</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Dashboard</h1>
+        <p>Overview of your tumor classification system</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Patients</h3>
+                <div class="stat-number">{{ total_patients }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Benign Cases</h3>
+                <div class="stat-number">{{ benign_count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Malignant Cases</h3>
+                <div class="stat-number">{{ malignant_count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Model Status</h3>
+                <div class="stat-number {% if models_trained %}trained{% else %}not-trained{% endif %}">
+                    {% if models_trained %}Trained{% else %}Not Trained{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-actions">
+            <h3>Quick Actions</h3>
+            <div class="action-buttons">
+                {% if not models_trained %}
+                    <form action="/train" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-primary">Train Models</button>
+                    </form>
+                {% endif %}
+                <a href="/predict" class="btn btn-secondary">Make Prediction</a>
+                <a href="/upload" class="btn btn-tertiary">Upload New Data</a>
+            </div>
+        </div>
+
+        <div class="data-preview">
+            <h3>Data Distribution</h3>
+            <div id="diagnosis-chart" style="width: 100%; height: 400px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Create pie chart for diagnosis distribution
+        const benignCount = parseInt('{{ benign_count }}');
+        const malignantCount = parseInt('{{ malignant_count }}');
+
+        const data = [{
+            values: [benignCount, malignantCount],
+            labels: ['Benign', 'Malignant'],
+            type: 'pie',
+            marker: {
+                colors: ['#28a745', '#dc3545']
+            }
+        }];
+
+        const layout = {
+            title: 'Tumor Diagnosis Distribution',
+            font: {family: 'Arial, sans-serif', size: 14}
+        };
+
+        Plotly.newPlot('diagnosis-chart', data, layout);
+    </script>
+
+    <footer>
+        <small>&copy; 2023 Tumor Classification App</small>
+    </footer>
+</body>
+</html>
