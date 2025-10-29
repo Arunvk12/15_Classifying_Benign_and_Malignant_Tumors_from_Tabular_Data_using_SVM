@@ -75,3 +75,50 @@ Typical results:
 ```bash
 git clone https://github.com/yourusername/15_Classifying_Benign_and_Malignant_Tumors_from_Tabular_Data_using_SVM.git
 cd 15_Classifying_Benign_and_Malignant_Tumors_from_Tabular_Data_using_SVM
+
+Install Dependencies
+pip install -r requirements.txt
+
+Run the Flask Application
+python app.py
+
+Open in Browser
+Visit: http://127.0.0.1:5000
+
+🧱 Project Structure
+├── app.py                # Main Flask application
+├── models/               # Saved ML models (SVM, RF, Scaler)
+├── templates/            # HTML templates for UI
+├── data/                 # SQLite database file (tumors.db)
+├── uploads/              # Folder for uploaded CSVs
+├── requirements.txt      # Project dependencies
+└── README.md             # Project documentation
+
+
+
+API Example
+
+Endpoint: /api/predict
+Method: POST
+Content-Type: application/json
+
+Request Example:
+
+{
+  "age": 45,
+  "tumor_size": 2.3,
+  "texture": 56.7,
+  "smoothness": 0.45,
+  "compactness": 0.60
+}
+
+
+Response Example:
+
+{
+  "svm_class": "benign",
+  "rf_class": "benign",
+  "svm_probability": 0.88,
+  "rf_probability": 0.91
+}
+
